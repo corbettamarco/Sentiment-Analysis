@@ -6,7 +6,7 @@ To run the docker of the app:
 	1. Build the docker image : sudo docker buildx build .
 	2. Run the container :   docker run -p 8888:5000 --name sentiment_analysis sentiment_analysis
 
-	Now the docker is running on the port 8888 in localhost.
+	Now the docker is running on http://172.17.0.2:5000.
 
 
 
