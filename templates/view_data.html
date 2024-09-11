@@ -1,0 +1,55 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}View Data{% endblock %}
+
+{% block content %}
+<style>
+      /* Custom styles for sentiment colors */
+      .positive-sentiment {
+        background-color: #28a745 !important;
+        color: white;
+    }
+    .negative-sentiment {
+        background-color: #dc3545 !important;
+        color: white;
+    }
+    .neutral-sentiment {
+        background-color: #6c757d !important;
+        color: white;
+    }
+</style>
+</style>
+
+<div class="container">
+    <h1 class="mt-5">Sentiment Analysis Data</h1>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mb-3">Back to Home</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th style="width:30%;">Text</th>
+                <th>Sentiment</th>
+                <th>Subjectivity</th>
+                <th>Token Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for analysis in analyses %}
+            <tr class="{% if analysis.sentiment|default(0) > 0 %}
+                positive-sentiment
+              {% elif analysis.sentiment|default(0) < 0 %}
+                negative-sentiment
+              {% else %}
+                neutral-sentiment
+              {% endif %}">
+                <td>{{ analysis.id }}</td>
+                <td style="width:30%;">{{ analysis.text }}</td>
+                <td>{{ analysis.sentiment }}</td>
+                <td>{{ analysis.subjectivity }}</td>
+                <td>{{ analysis.token_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

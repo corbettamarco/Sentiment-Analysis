@@ -1,0 +1,224 @@
+{% extends "bootstrap/base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+    }
+    .container {
+        margin-top: 20px;
+    }
+    .jumbotron {
+        background-color: #007bff;
+        color: #fff;
+        padding: 2rem 1rem;
+        border-radius: 0.3rem;
+        text-align: center;
+    }
+    .jumbotron h3 {
+        margin: 0;
+        font-size: 2rem;
+    }
+    .form-control {
+        border-radius: 0.25rem;
+        border: 1px solid #ced4da;
+        box-shadow: none;
+    }
+    .btn {
+        border-radius: 0.25rem;
+        margin: 5px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: 1px solid #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+    .btn-outline-dark {
+        color: #343a40;
+        border-color: #343a40;
+    }
+    .btn-outline-dark:hover {
+        background-color: #343a40;
+        color: #fff;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+    .btn-info {
+        background-color: #17a2b8;
+        border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+        background-color: #138496;
+        border-color: #117a8b;
+    }
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    .card-text {
+        padding: 20px;
+        border-bottom: 1px solid #eaeaea;
+    }
+    .card-footer {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+    .table-dark th, .table-dark td {
+        padding: 15px;
+        text-align: center;
+    }
+    .table-dark {
+        background-color: #343a40;
+        color: #fff;
+    }
+    .spinner-1 {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 60px;
+        width: 60px;
+        margin-top: -30px;
+        margin-left: -30px;
+        border-radius: 50%;
+        border: 6px solid transparent;
+        border-top-color: #007bff;
+        animation: spinner 0.7s linear infinite;
+    }
+    @keyframes spinner {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    .main {
+        position: relative;
+    }
+
+    /* Custom styles for sentiment colors */
+    .positive-sentiment {
+        background-color: #28a745 !important;
+        color: white;
+    }
+    .negative-sentiment {
+        background-color: #dc3545 !important;
+        color: white;
+    }
+    .neutral-sentiment {
+        background-color: #6c757d !important;
+        color: white;
+    }
+</style>
+
+<div class="container">
+  <div class="jumbotron">
+    <h3>Sentiment Analysis App</h3>
+  </div>
+</div>
+
+<div class="container">
+  <form method="POST" action="{{ url_for('analyze') }}" id="myForm">
+    <div class="form-group">
+      <label for="rawtext">Enter Your Text Below</label>
+      <textarea style="max-width: 100%;" class="form-control" rows="5" id="rawtext" name="rawtext" placeholder="Type your text here..." oninput="checkInput()"></textarea>
+    </div>
+    <button type="submit" onclick="analyzer()" class="btn btn-primary" id="submitBtn" disabled>Submit</button>
+    <button type="button" onclick="disableElements()" class="btn btn-outline-dark">Clear</button>
+    <a href="{{ url_for('view_data') }}" class="btn btn-info">View Data</a>
+  </form>
+</div>
+
+<div class="container main">
+  <div class="spinner-1"></div>
+  
+  <!-- Card with dynamic sentiment color -->
+  <div class="card 
+   {% if blob_sentiment|default(0) > 0 %}
+     positive-sentiment
+   {% elif blob_sentiment|default(0) < 0 %}
+     negative-sentiment
+   {% else %}
+     neutral-sentiment
+   {% endif %}">
+    <div class="card-text">
+      <h5>Your Text</h5>
+      <p>{{ received_text }}</p>
+    </div>
+    <div class="card-footer">
+      <table class="table table-dark">
+        <thead>
+          <tr>
+            <th>Sentiment</th>
+            <th>Polarity</th>
+            <th>Subjectivity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Score:</th>
+            <td>{{ blob_sentiment }}</td>
+            <td>{{ blob_subjectivity }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{{ super() }}
+
+<script>
+
+function analyzer() {
+    const mainElement = document.querySelector('.main');
+    mainElement.querySelector('.spinner-1').style.display = 'block';
+    // Hide the content
+    mainElement.querySelector('.card').style.display = 'none';
+    
+    // Simulate server request
+    setTimeout(() => {
+        mainElement.querySelector('.spinner-1').style.display = 'none';
+        mainElement.querySelector('.card').style.display = 'block';
+    }, 2000); // Duration of the spinner
+}
+
+// Disable the submit button if the textarea is empty
+function checkInput() {
+    const textArea = document.getElementById('rawtext').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Enable the button if the textarea has content, disable it otherwise
+    if (textArea.length > 0) {
+        submitBtn.disabled = false;
+    } else {
+        submitBtn.disabled = true;
+    }
+}
+
+// Reset the form and disable the submit button
+function disableElements() {
+    document.getElementById("myForm").reset();
+    document.getElementById("submitBtn").disabled = true;
+}
+</script>
+
+{% endblock %}
