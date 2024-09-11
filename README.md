@@ -1,4 +1,4 @@
-# sentiment_analysis
+# Sentiment Analysis
 Sentiment Analysis app built using Textblob deployed through flask and docker with SQLite Database.
 
 To run the docker of the app:
