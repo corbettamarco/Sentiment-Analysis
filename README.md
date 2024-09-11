@@ -17,5 +17,5 @@ Sentiment Analysis app built using Textblob deployed through flask and docker wi
 
 ## Further development
 	
-	The app could be distributed on AWS installing the container on an EC2 instance and accessed via its public IP. SQLite could be replaced by a RDS using MySQL or PostgreSQL.
+The app could be distributed on AWS installing the container on an EC2 instance and accessed via its public IP. SQLite could be replaced by a RDS using MySQL or PostgreSQL.
 
